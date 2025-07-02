@@ -3,22 +3,6 @@
 [![Verilog](https://img.shields.io/badge/Language-SystemVerilog-blue.svg)](https://www.verilog.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Table of Contents
-
-* [Overview](#overview)
-* [Features](#features)
-* [FSM States](#fsm-states)
-* [Repository Structure](#repository-structure)
-* [Getting Started](#getting-started)
-
-  * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
-  * [Simulation](#simulation)
-* [Usage](#usage)
-* [Contributing](#contributing)
-* [License](#license)
-* [Contact](#contact)
-
 ## Overview
 
 This project implements a **Finite State Machine (FSM)** for a washing machine controller using SystemVerilog. The FSM controls the sequence of operations including door lock, water fill, detergent wash, main wash (cycle), drain, spin, and a water-only wash option (`againwash`).
@@ -31,7 +15,7 @@ This project implements a **Finite State Machine (FSM)** for a washing machine c
 * Synthesizable code ready for FPGA/ASIC integration
 
 ## FSM States
-
+![Finite State Machine](https://github.com/ShrirangRekhate/Washing_Machine_FSM_using_verilog/blob/main/Images/FSM.png?raw=true)
 1. **IDLE**: Waiting for `start` and `door_close` signals.
 2. **FILL\_WATER**: Activates water valve until `filled` is asserted.
 3. **ADD\_DETERGENT**: (Optional) Waits for `detergent_added` signal.
@@ -76,26 +60,7 @@ Run the testbench using your simulator of choice:
 vvp wash_tb
 ```
 
-## Usage
-
-* Modify input stimuli in `Washingtb.sv` to customize timing or add new test cases.
-* View waveforms in your simulator's GUI or export to VCD:
-
-```bash
-# Dump VCD in testbench
-$dumpfile("waveforms.vcd");
-$dumpvars(0, tb_Washing_Machine);
-```
-
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/my-feature`)
-3. Commit your changes (`git commit -m "Add feature"`)
-4. Push to the branch (`git push origin feature/my-feature`)
-5. Open a Pull Request
+![Finite State Machine](https://github.com/ShrirangRekhate/Washing_Machine_FSM_using_verilog/blob/main/Images/Sim.png?raw=true)
 
 ## License
 
@@ -105,5 +70,5 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 👤 **Shrirang Rekhate**
 
-* Email: `your.email@example.com`
+* Email: `shrirangrekhate27@gmail.com`
 * GitHub: [ShrirangRekhate](https://github.com/ShrirangRekhate)
