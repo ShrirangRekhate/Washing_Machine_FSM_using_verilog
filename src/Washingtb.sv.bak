@@ -1,0 +1,175 @@
+// ========================================
+// TESTBENCH MODULE
+// ========================================
+module tb_Washing_Machine;
+
+// Testbench signals
+reg clk;
+reg reset;
+reg start;
+reg door_close;
+reg filled;
+reg detergent_added;
+reg cycleTO;
+reg againwash;
+reg spinTO;
+reg drained;
+
+wire door_lock;
+wire motor_on;
+wire fill_val_on;
+wire drain_val_on;
+wire done;
+wire water_wash;
+
+// Instantiate the Unit Under Test (UUT)
+Washing_Machine uut (
+    .clk(clk),
+    .reset(reset),
+    .start(start),
+    .door_close(door_close),
+    .filled(filled),
+    .detergent_added(detergent_added),
+    .cycleTO(cycleTO),
+    .againwash(againwash),
+    .spinTO(spinTO),
+    .drained(drained),
+    .door_lock(door_lock),
+    .motor_on(motor_on),
+    .fill_val_on(fill_val_on),
+    .drain_val_on(drain_val_on),
+    .done(done),
+    .water_wash(water_wash)
+);
+
+// Clock generation
+initial begin
+    clk = 0;
+    forever #5 clk = ~clk; // 10ns period, 100MHz clock
+end
+
+// Task to display current state and outputs
+task display_status;
+    input [56:1] test_phase; // 7 characters * 8 bits = 56 bits
+    begin
+        $display("=== %s ===", test_phase);
+        $display("Time: %0t | State: %b", $time, uut.state);
+        $display("Outputs: door_lock=%b, motor_on=%b, fill_val_on=%b, drain_val_on=%b, done=%b, water_wash=%b", 
+                 door_lock, motor_on, fill_val_on, drain_val_on, done, water_wash);
+        $display("Inputs: start=%b, door_close=%b, filled=%b, detergent_added=%b, drained=%b", 
+                 start, door_close, filled, detergent_added, drained);
+        $display("Timeouts: cycleTO=%b, spinTO=%b, againwash=%b", cycleTO, spinTO, againwash);
+        $display("----------------------------------------");
+    end
+endtask
+
+// Task to wait for clock cycles
+task wait_cycles;
+    input integer cycles;
+    begin
+        repeat(cycles) @(posedge clk);
+    end
+endtask
+
+// Main test sequence
+initial begin
+    // Initialize all inputs
+    reset = 0;
+    start = 0;
+    door_close = 0;
+    filled = 0;
+    detergent_added = 0;
+    cycleTO = 0;
+    againwash = 0;
+    spinTO = 0;
+    drained = 0;
+    
+    $display("\n=== Starting Washing Machine Testbench ===\n");
+    
+    // Test 1: Reset functionality
+    $display("TEST 1: Reset functionality");
+    reset = 1;
+    wait_cycles(2);
+    display_status("RESET");
+    reset = 0;
+    wait_cycles(1);
+    display_status("AFTER_RESET");
+    
+    // Test 2: Try to start without door closed
+    $display("\nTEST 2: Start without door closed");
+    start = 1;
+    wait_cycles(2);
+    display_status("START_NO_DOOR");
+    start = 0;
+    
+    // Test 3: Normal wash cycle without detergent initially
+    $display("\nTEST 3: Normal wash cycle");
+    door_close = 1;
+    start = 1;
+    wait_cycles(2);
+    display_status("START_WITH_DOOR");
+    start = 0;
+    
+    // Water filling phase
+    wait_cycles(3);
+    display_status("FILLING");
+    filled = 1;
+    wait_cycles(2);
+    display_status("WATER_FILLED");
+    filled = 0;
+    
+    // Add detergent
+    wait_cycles(2);
+    display_status("WAITING_DETERGENT");
+    detergent_added = 1;
+    wait_cycles(2);
+    display_status("DETERGENT_ADDED");
+    
+    // Wash cycle
+    wait_cycles(5);
+    display_status("WASHING");
+    cycleTO = 1;
+    wait_cycles(2);
+    display_status("CYCLE_TIMEOUT");
+    cycleTO = 0;
+    
+    // Drain phase
+    wait_cycles(3);
+    display_status("DRAINING");
+    drained = 1;
+    wait_cycles(2);
+    display_status("DRAINED");
+    drained = 0;
+    
+    // Spin phase
+    wait_cycles(3);
+    display_status("SPINNING");
+    spinTO = 1;
+    wait_cycles(2);
+    display_status("SPIN_COMPLETE");
+    spinTO = 0;
+    
+    wait_cycles(2);
+    display_status("FINAL_STATE");
+    
+    $display("\n=== Testbench Completed ===");
+    $display("Total simulation time: %0t", $time);
+    
+    $finish;
+end
+
+// Monitor for state changes
+always @(posedge clk) begin
+    if (uut.state != uut.next_state) begin
+        $display("State Change at time %0t: %b -> %b", $time, uut.state, uut.next_state);
+    end
+end
+
+// Timeout for simulation
+initial begin
+    #10000; // 10us timeout
+    $display("ERROR: Simulation timeout!");
+    $finish;
+end
+
+endmodule

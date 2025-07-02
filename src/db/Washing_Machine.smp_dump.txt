@@ -1,0 +1,9 @@
+
+State Machine - |Washing_Machine|state
+Name state.SPIN state.DRAIN state.CYCLE state.ADD_DETERGENT state.FILL_WATER state.IDLE 
+state.IDLE 0 0 0 0 0 0 
+state.FILL_WATER 0 0 0 0 1 1 
+state.ADD_DETERGENT 0 0 0 1 0 1 
+state.CYCLE 0 0 1 0 0 1 
+state.DRAIN 0 1 0 0 0 1 
+state.SPIN 1 0 0 0 0 1 

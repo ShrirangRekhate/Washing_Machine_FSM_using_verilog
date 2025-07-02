@@ -1,0 +1,36 @@
+|Washing_Machine
+clk => state~1.DATAIN
+reset => state~3.DATAIN
+start => always1.IN0
+door_close => always1.IN1
+filled => next_state.OUTPUTSELECT
+filled => motor_on.OUTPUTSELECT
+filled => fill_val_on.DATAB
+filled => Selector1.IN2
+detergent_added => motor_on.DATAB
+detergent_added => Selector3.IN4
+detergent_added => Selector7.IN5
+detergent_added => Selector8.IN4
+detergent_added => next_state.DATAB
+detergent_added => Selector2.IN1
+cycleTO => Selector4.IN3
+cycleTO => Selector9.IN3
+cycleTO => Selector7.IN3
+cycleTO => Selector3.IN2
+againwash => next_state.DATAB
+againwash => motor_on.DATAB
+spinTO => Selector0.IN3
+spinTO => done.DATAB
+spinTO => Selector6.IN2
+spinTO => Selector5.IN2
+drained => next_state.OUTPUTSELECT
+drained => motor_on.OUTPUTSELECT
+drained => Selector4.IN1
+door_lock << Selector6.DB_MAX_OUTPUT_PORT_TYPE
+motor_on << Selector7.DB_MAX_OUTPUT_PORT_TYPE
+fill_val_on << fill_val_on.DB_MAX_OUTPUT_PORT_TYPE
+drain_val_on << Selector9.DB_MAX_OUTPUT_PORT_TYPE
+done << done.DB_MAX_OUTPUT_PORT_TYPE
+water_wash << Selector8.DB_MAX_OUTPUT_PORT_TYPE
+
+

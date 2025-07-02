@@ -1,0 +1,438 @@
+module Washing_Machine(
+    input clk, 
+    input reset, 
+    input start, 
+    input door_close, 
+    input filled, 
+    input detergent_added, 
+    input cycleTO,
+    input againwash, 
+    input spinTO, 
+    input drained,
+    output reg door_lock, 
+    output reg motor_on, 
+    output reg fill_val_on, 
+    output reg drain_val_on, 
+    output reg done,  
+    output reg water_wash
+);
+
+// State parameters
+parameter IDLE = 3'b000, 
+          FILL_WATER = 3'b001,
+          ADD_DETERGENT = 3'b010,
+          CYCLE = 3'b011,
+          DRAIN = 3'b100,
+          SPIN = 3'b101;
+
+reg [2:0] state, next_state;
+
+// Sequential logic for state transitions
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        state <= IDLE;
+    end
+    else begin
+        state <= next_state;
+    end
+end
+
+// Combinational logic for next state and outputs
+always @(*) begin
+    // Default output values to prevent latches
+    door_lock = 1'b0;
+    motor_on = 1'b0;
+    fill_val_on = 1'b0;
+    drain_val_on = 1'b0;
+    done = 1'b0;
+    water_wash = 1'b0;
+    next_state = IDLE;
+    
+    case(state)
+        IDLE: begin
+            if (start && door_close) begin
+                next_state = FILL_WATER;
+                door_lock = 1'b1;
+            end
+            else begin
+                next_state = IDLE;
+                door_lock = 1'b0;
+            end
+        end
+
+        FILL_WATER: begin
+            door_lock = 1'b1;
+            if (filled) begin
+                if (!detergent_added) begin
+                    next_state = ADD_DETERGENT;
+                end
+                else begin
+                    next_state = CYCLE;
+                    motor_on = 1'b1;
+                    water_wash = 1'b1;
+                end
+            end
+            else begin
+                next_state = FILL_WATER;
+                fill_val_on = 1'b1;
+            end
+        end
+
+        ADD_DETERGENT: begin
+            door_lock = 1'b1;
+            if (detergent_added) begin
+                next_state = CYCLE;
+                motor_on = 1'b1;
+                water_wash = 1'b1;
+            end
+            else begin
+                next_state = ADD_DETERGENT;
+            end
+        end
+
+        CYCLE: begin
+            door_lock = 1'b1;
+            water_wash = 1'b1;
+            if (cycleTO) begin
+                next_state = DRAIN;
+                drain_val_on = 1'b1;
+            end
+            else begin
+                next_state = CYCLE;
+                motor_on = 1'b1;
+            end
+        end
+
+        DRAIN: begin
+            door_lock = 1'b1;
+            drain_val_on = 1'b1;
+            if (drained) begin
+                if (againwash) begin
+                    next_state = FILL_WATER;
+                end
+                else begin
+                    next_state = SPIN;
+                    motor_on = 1'b1;  // Motor for spinning
+                end
+            end
+            else begin
+                next_state = DRAIN;
+            end
+        end
+
+        SPIN: begin
+            door_lock = 1'b1;
+            motor_on = 1'b1;  // Motor should be on during spinning
+            if (spinTO) begin
+                next_state = IDLE;
+                done = 1'b1;
+                door_lock = 1'b0;  // Unlock door when done
+            end
+            else begin
+                next_state = SPIN;
+            end
+        endmodule tb_Washing_Machine;
+
+// Testbench signals
+reg clk;
+reg reset;
+reg start;
+reg door_close;
+reg filled;
+reg detergent_added;
+reg cycleTO;
+reg againwash;
+reg spinTO;
+reg drained;
+
+wire door_lock;
+wire motor_on;
+wire fill_val_on;
+wire drain_val_on;
+wire done;
+wire water_wash;
+
+// Instantiate the Unit Under Test (UUT)
+Washing_Machine uut (
+    .clk(clk),
+    .reset(reset),
+    .start(start),
+    .door_close(door_close),
+    .filled(filled),
+    .detergent_added(detergent_added),
+    .cycleTO(cycleTO),
+    .againwash(againwash),
+    .spinTO(spinTO),
+    .drained(drained),
+    .door_lock(door_lock),
+    .motor_on(motor_on),
+    .fill_val_on(fill_val_on),
+    .drain_val_on(drain_val_on),
+    .done(done),
+    .water_wash(water_wash)
+);
+
+// Clock generation
+initial begin
+    clk = 0;
+    forever #5 clk = ~clk; // 10ns period, 100MHz clock
+end
+
+// Task to display current state and outputs
+task display_status;
+    input [7*8:1] test_phase;
+    begin
+        $display("=== %s ===", test_phase);
+        $display("Time: %0t | State: %b", $time, uut.state);
+        $display("Outputs: door_lock=%b, motor_on=%b, fill_val_on=%b, drain_val_on=%b, done=%b, water_wash=%b", 
+                 door_lock, motor_on, fill_val_on, drain_val_on, done, water_wash);
+        $display("Inputs: start=%b, door_close=%b, filled=%b, detergent_added=%b, drained=%b", 
+                 start, door_close, filled, detergent_added, drained);
+        $display("Timeouts: cycleTO=%b, spinTO=%b, againwash=%b", cycleTO, spinTO, againwash);
+        $display("----------------------------------------");
+    end
+endtask
+
+// Task to wait for clock cycles
+task wait_cycles;
+    input integer cycles;
+    begin
+        repeat(cycles) @(posedge clk);
+    end
+endtask
+
+// Main test sequence
+initial begin
+    // Initialize VCD dump
+    $dumpfile("washing_machine.vcd");
+    $dumpvars(0, tb_Washing_Machine);
+    
+    // Initialize all inputs
+    reset = 0;
+    start = 0;
+    door_close = 0;
+    filled = 0;
+    detergent_added = 0;
+    cycleTO = 0;
+    againwash = 0;
+    spinTO = 0;
+    drained = 0;
+    
+    $display("\n=== Starting Washing Machine Testbench ===\n");
+    
+    // Test 1: Reset functionality
+    $display("TEST 1: Reset functionality");
+    reset = 1;
+    wait_cycles(2);
+    display_status("RESET");
+    reset = 0;
+    wait_cycles(1);
+    display_status("AFTER_RESET");
+    
+    // Test 2: Try to start without door closed
+    $display("\nTEST 2: Start without door closed");
+    start = 1;
+    wait_cycles(2);
+    display_status("START_NO_DOOR");
+    start = 0;
+    
+    // Test 3: Normal wash cycle without detergent initially
+    $display("\nTEST 3: Normal wash cycle");
+    door_close = 1;
+    start = 1;
+    wait_cycles(2);
+    display_status("START_WITH_DOOR");
+    start = 0;
+    
+    // Water filling phase
+    wait_cycles(3);
+    display_status("FILLING");
+    filled = 1;
+    wait_cycles(2);
+    display_status("WATER_FILLED");
+    filled = 0;
+    
+    // Add detergent
+    wait_cycles(2);
+    display_status("WAITING_DETERGENT");
+    detergent_added = 1;
+    wait_cycles(2);
+    display_status("DETERGENT_ADDED");
+    
+    // Wash cycle
+    wait_cycles(5);
+    display_status("WASHING");
+    cycleTO = 1;
+    wait_cycles(2);
+    display_status("CYCLE_TIMEOUT");
+    cycleTO = 0;
+    
+    // Drain phase
+    wait_cycles(3);
+    display_status("DRAINING");
+    drained = 1;
+    wait_cycles(2);
+    display_status("DRAINED");
+    drained = 0;
+    
+    // Spin phase
+    wait_cycles(3);
+    display_status("SPINNING");
+    spinTO = 1;
+    wait_cycles(2);
+    display_status("SPIN_COMPLETE");
+    spinTO = 0;
+    
+    wait_cycles(2);
+    display_status("FINAL_STATE");
+    
+    // Test 4: Wash cycle with detergent pre-added
+    $display("\nTEST 4: Wash cycle with detergent pre-added");
+    
+    // Reset for new test
+    reset = 1;
+    wait_cycles(2);
+    reset = 0;
+    detergent_added = 1; // Detergent already added
+    
+    door_close = 1;
+    start = 1;
+    wait_cycles(2);
+    start = 0;
+    
+    // Water filling
+    wait_cycles(2);
+    filled = 1;
+    wait_cycles(2);
+    display_status("SKIP_DETERGENT");
+    filled = 0;
+    
+    // Should go directly to cycle
+    wait_cycles(3);
+    display_status("DIRECT_CYCLE");
+    
+    // Complete the cycle
+    cycleTO = 1;
+    wait_cycles(2);
+    cycleTO = 0;
+    
+    drained = 1;
+    wait_cycles(2);
+    drained = 0;
+    
+    spinTO = 1;
+    wait_cycles(2);
+    spinTO = 0;
+    
+    display_status("TEST4_COMPLETE");
+    
+    // Test 5: Additional wash cycle (againwash = 1)
+    $display("\nTEST 5: Additional wash cycle");
+    
+    // Reset for new test
+    reset = 1;
+    wait_cycles(2);
+    reset = 0;
+    detergent_added = 0;
+    againwash = 1; // Request additional wash
+    
+    door_close = 1;
+    start = 1;
+    wait_cycles(2);
+    start = 0;
+    
+    // First cycle
+    filled = 1;
+    wait_cycles(2);
+    filled = 0;
+    
+    detergent_added = 1;
+    wait_cycles(2);
+    
+    cycleTO = 1;
+    wait_cycles(2);
+    cycleTO = 0;
+    
+    // First drain
+    drained = 1;
+    wait_cycles(2);
+    display_status("FIRST_DRAIN_AGAIN");
+    drained = 0;
+    
+    // Should go back to fill water for second wash
+    wait_cycles(2);
+    display_status("SECOND_FILL");
+    
+    filled = 1;
+    wait_cycles(2);
+    filled = 0;
+    
+    // Second wash cycle
+    cycleTO = 1;
+    wait_cycles(2);
+    cycleTO = 0;
+    
+    // Turn off againwash for final drain and spin
+    againwash = 0;
+    drained = 1;
+    wait_cycles(2);
+    drained = 0;
+    
+    spinTO = 1;
+    wait_cycles(2);
+    spinTO = 0;
+    
+    display_status("DOUBLE_WASH_COMPLETE");
+    
+    // Test 6: Door opening during operation (error condition)
+    $display("\nTEST 6: Door opening during operation");
+    
+    reset = 1;
+    wait_cycles(2);
+    reset = 0;
+    
+    door_close = 1;
+    start = 1;
+    wait_cycles(2);
+    start = 0;
+    
+    // Start filling
+    wait_cycles(2);
+    door_close = 0; // Open door during operation
+    wait_cycles(2);
+    display_status("DOOR_OPENED");
+    
+    // End simulation
+    wait_cycles(10);
+    
+    $display("\n=== Testbench Completed ===");
+    $display("Total simulation time: %0t", $time);
+    
+    $finish;
+end
+
+// Monitor for state changes
+always @(posedge clk) begin
+    if (uut.state != uut.next_state) begin
+        $display("State Change at time %0t: %b -> %b", $time, uut.state, uut.next_state);
+    end
+end
+
+// Timeout for simulation
+initial begin
+    #10000; // 10us timeout
+    $display("ERROR: Simulation timeout!");
+    $finish;
+end
+
+endmodule
+
+        default: begin
+            next_state = IDLE;
+        end
+    endcase
+end
+
+endmodule
+
+

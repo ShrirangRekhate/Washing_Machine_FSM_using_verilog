@@ -1,0 +1,86 @@
+# Reading pref.tcl
+# do Washing_Machine_run_msim_rtl_verilog.do
+# if {[file exists rtl_work]} {
+# 	vdel -lib rtl_work -all
+# }
+# vlib rtl_work
+# vmap work rtl_work
+# Model Technology ModelSim - Intel FPGA Edition vmap 2020.1 Lib Mapping Utility 2020.02 Feb 28 2020
+# vmap work rtl_work 
+# Copying D:/Quartus/modelsim_ase/win32aloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# 
+# vlog -sv -work work +incdir+D:/Projects/Washing\ machine\ using\ Verilog/WM {D:/Projects/Washing machine using Verilog/WM/Washing_Machine.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 10:18:27 on Jul 02,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+D:/Projects/Washing machine using Verilog/WM" D:/Projects/Washing machine using Verilog/WM/Washing_Machine.sv 
+# -- Compiling module Washing_Machine
+# 
+# Top level modules:
+# 	Washing_Machine
+# End time: 10:18:27 on Jul 02,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# vlog -sv -work work +incdir+D:/Projects/Washing\ machine\ using\ Verilog/WM {D:/Projects/Washing machine using Verilog/WM/Washingtb.sv}
+# Model Technology ModelSim - Intel FPGA Edition vlog 2020.1 Compiler 2020.02 Feb 28 2020
+# Start time: 10:18:27 on Jul 02,2025
+# vlog -reportprogress 300 -sv -work work "+incdir+D:/Projects/Washing machine using Verilog/WM" D:/Projects/Washing machine using Verilog/WM/Washingtb.sv 
+# -- Compiling module tb_Washing_Machine
+# 
+# Top level modules:
+# 	tb_Washing_Machine
+# End time: 10:18:27 on Jul 02,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cyclonev_ver -L cyclonev_hssi_ver -L cyclonev_pcie_hip_ver -L rtl_work -L work -voptargs="+acc"  Washingtb
+# vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cyclonev_ver -L cyclonev_hssi_ver -L cyclonev_pcie_hip_ver -L rtl_work -L work -voptargs=""+acc"" Washingtb 
+# Start time: 10:18:27 on Jul 02,2025
+# ** Error: (vsim-3170) Could not find 'Washingtb'.
+#         Searched libraries:
+#             D:/Quartus/modelsim_ase/altera/verilog/altera
+#             D:/Quartus/modelsim_ase/altera/verilog/220model
+#             D:/Quartus/modelsim_ase/altera/verilog/sgate
+#             D:/Quartus/modelsim_ase/altera/verilog/altera_mf
+#             D:/Quartus/modelsim_ase/altera/verilog/altera_lnsim
+#             D:/Quartus/modelsim_ase/altera/verilog/cyclonev
+#             D:/Quartus/modelsim_ase/altera/verilog/cyclonev_hssi
+#             D:/Quartus/modelsim_ase/altera/verilog/cyclonev_pcie_hip
+#             D:/Projects/Washing machine using Verilog/WM/simulation/modelsim/rtl_work
+#             D:/Projects/Washing machine using Verilog/WM/simulation/modelsim/rtl_work
+# Error loading design
+# Error: Error loading design
+#        Pausing macro execution
+# MACRO ./Washing_Machine_run_msim_rtl_verilog.do PAUSED at line 12
+vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cyclonev_ver -L cyclonev_hssi_ver -L cyclonev_pcie_hip_ver -L rtl_work -L work -voptargs=\"+acc\" work.tb_Washing_Machine
+# vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L cyclonev_ver -L cyclonev_hssi_ver -L cyclonev_pcie_hip_ver -L rtl_work -L work -voptargs=""+acc"" work.tb_Washing_Machine 
+# Start time: 10:18:27 on Jul 02,2025
+# Loading sv_std.std
+# Loading work.tb_Washing_Machine
+# Loading work.Washing_Machine
+add wave -position insertpoint sim:/tb_Washing_Machine/*
+run -all
+# Time=0 | State=000 | motor=0, fill=0, drain=0, lock=0, done=0, wash=0
+# Time=20 | State=000 | motor=0, fill=0, drain=0, lock=1, done=0, wash=0
+# Time=25 | State=001 | motor=0, fill=1, drain=0, lock=1, done=0, wash=0
+# Time=40 | State=001 | motor=0, fill=0, drain=0, lock=1, done=0, wash=0
+# Time=45 | State=010 | motor=0, fill=0, drain=0, lock=1, done=0, wash=0
+# Time=60 | State=010 | motor=1, fill=0, drain=0, lock=1, done=0, wash=1
+# Time=65 | State=011 | motor=1, fill=0, drain=0, lock=1, done=0, wash=1
+# Time=100 | State=011 | motor=0, fill=0, drain=1, lock=1, done=0, wash=1
+# Time=105 | State=100 | motor=0, fill=0, drain=1, lock=1, done=0, wash=0
+# Time=120 | State=100 | motor=1, fill=0, drain=1, lock=1, done=0, wash=0
+# Time=125 | State=101 | motor=1, fill=0, drain=0, lock=1, done=0, wash=0
+# Time=150 | State=101 | motor=1, fill=0, drain=0, lock=0, done=1, wash=0
+# Time=155 | State=000 | motor=0, fill=0, drain=0, lock=1, done=0, wash=0
+# Time=165 | State=001 | motor=0, fill=1, drain=0, lock=1, done=0, wash=0
+# ** Note: $finish    : D:/Projects/Washing machine using Verilog/WM/Washingtb.sv(43)
+#    Time: 180 ps  Iteration: 0  Instance: /tb_Washing_Machine
+# 1
+# Break in Module tb_Washing_Machine at D:/Projects/Washing machine using Verilog/WM/Washingtb.sv line 43
+write format wave -window .main_pane.wave.interior.cs.body.pw.wf {D:/Projects/Washing machine using Verilog/WM/simulation/modelsim/wave.do}
+write format wave -window .main_pane.wave.interior.cs.body.pw.wf {D:/Projects/Washing machine using Verilog/WM/simulation/modelsim/wave1.do}
+# WARNING: No extended dataflow license exists
+# Printing 1 page to 'Microsoft Print to PDF'
+# Error: invalid command name "::.main_pane.dataflow.interior.cs.body.pw.df.c"
+# End time: 10:43:44 on Jul 02,2025, Elapsed time: 0:25:17
+# Errors: 1, Warnings: 0

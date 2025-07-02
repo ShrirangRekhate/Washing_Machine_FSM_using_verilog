@@ -1,0 +1,73 @@
+{
+	"partitions" : [
+		{
+			"name" : "Top",
+			"pins" : [
+				{
+					"name" : "door_lock",
+					"strict" : false
+				},
+				{
+					"name" : "motor_on",
+					"strict" : false
+				},
+				{
+					"name" : "fill_val_on",
+					"strict" : false
+				},
+				{
+					"name" : "drain_val_on",
+					"strict" : false
+				},
+				{
+					"name" : "done",
+					"strict" : false
+				},
+				{
+					"name" : "water_wash",
+					"strict" : false
+				},
+				{
+					"name" : "spinTO",
+					"strict" : false
+				},
+				{
+					"name" : "start",
+					"strict" : false
+				},
+				{
+					"name" : "door_close",
+					"strict" : false
+				},
+				{
+					"name" : "detergent_added",
+					"strict" : false
+				},
+				{
+					"name" : "filled",
+					"strict" : false
+				},
+				{
+					"name" : "againwash",
+					"strict" : false
+				},
+				{
+					"name" : "drained",
+					"strict" : false
+				},
+				{
+					"name" : "cycleTO",
+					"strict" : false
+				},
+				{
+					"name" : "clk",
+					"strict" : false
+				},
+				{
+					"name" : "reset",
+					"strict" : false
+				}
+			]
+		}
+	]
+}
