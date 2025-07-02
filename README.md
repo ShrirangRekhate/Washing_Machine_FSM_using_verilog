@@ -1,7 +1,6 @@
 # Washing Machine FSM in Verilog
 
 [![Verilog](https://img.shields.io/badge/Language-SystemVerilog-blue.svg)](https://www.verilog.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## Overview
 
@@ -55,9 +54,6 @@ Washing_Machine_FSM_using_verilog/
 
 ![Finite State Machine](https://github.com/ShrirangRekhate/Washing_Machine_FSM_using_verilog/blob/main/Images/Sim.png?raw=true)
 
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Contact
 
