@@ -40,7 +40,7 @@ Washing_Machine_FSM_using_verilog/
 ### Prerequisites
 
 * **Verilog/SystemVerilog simulator** (e.g., ModelSim, Icarus Verilog)
-* **make** (optional)
+* **Software** (e.g., Quartus Prime Lite, Xilinks Vivado)
 
 ### Installation
 
