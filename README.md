@@ -53,13 +53,6 @@ Washing_Machine_FSM_using_verilog/
 
 ### Simulation
 
-Run the testbench using your simulator of choice:
-
-```bash
-# Example with Icarus Verilog\iverilog -g2012 -o wash_tb Washing_Machine.sv Washingtb.sv
-vvp wash_tb
-```
-
 ![Finite State Machine](https://github.com/ShrirangRekhate/Washing_Machine_FSM_using_verilog/blob/main/Images/Sim.png?raw=true)
 
 ## License
